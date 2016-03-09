@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/corneldamian/golog"
+	_ "github.com/denisenkom/go-mssqldb"
 )
 
 // PingMsServer uses the connection string in the config file to verify it is available

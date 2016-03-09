@@ -3,6 +3,8 @@ package Microsoft
 import (
 	"database/sql"
 	"log"
+
+	_ "github.com/denisenkom/go-mssqldb"
 )
 
 // GetByQuery will execute a query against the MsSQL database
