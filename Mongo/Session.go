@@ -10,39 +10,59 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
-// GetDatabaseFromConnection sets session informaiton from a connection string
-func GetDatabaseFromConnection(connectionString string, databaseName string) (*mgo.Database, error) {
-	session, err := GetSession(connectionString)
+// InitCollectionFromDatabase - initialize collection from mgo database
+func InitCollectionFromDatabase(db *mgo.Database, collectionName string) *mgo.Collection {
+	return db.C(collectionName)
+}
+
+// InitCollectionFromSession - initialize collection from mgo session
+func InitCollectionFromSession(session *mgo.Session, databaseName string, collectionName string) *mgo.Collection {
+	db := session.DB(databaseName)
+	return db.C(collectionName)
+}
+
+// InitCollectionFromConnectionString - initialize collection from a connection string
+func InitCollectionFromConnectionString(connectionString string, databaseName string, collectionName string) *mgo.Collection {
+	db, err := InitDatabaseFromConnection(connectionString, databaseName)
+	if err != nil {
+		panic(err)
+	}
+	return db.C(collectionName)
+}
+
+// InitDatabaseFromConnection sets session informaiton from a connection string
+func InitDatabaseFromConnection(connectionString string, databaseName string) (*mgo.Database, error) {
+	session, err := InitSessionFromConnectionString(connectionString)
 	if err != nil {
 		return nil, err
 	}
 	return session.DB(databaseName), nil
 }
 
-//
-// // GetDatabaseFromSession sets session informaiton from a connection string
-// func GetDatabaseFromSession(session mgo.Session, databaseName string) (*mgo.Database, error) {
-// 	return session.DB(databaseName), nil
-// }
+// InitDatabaseFromSession sets session informaiton from a connection string
+func InitDatabaseFromSession(session *mgo.Session, databaseName string) (*mgo.Database, error) {
+	return session.DB(databaseName), nil
+}
 
-// GetSession get the session information for a conneciton
-func GetSession(connectionString string) (*mgo.Session, error) {
+// InitSessionFromConnectionString get the session information for a conneciton
+func InitSessionFromConnectionString(connectionString string) (*mgo.Session, error) {
 	dialInformation, sessionMode, err := GetDialInformation(connectionString)
 	if err != nil {
 		fmt.Println("error getting dial information", err)
 		panic(err)
 	}
+	return InitSessionFromDialInfo(dialInformation, sessionMode)
+}
 
-	fmt.Println(dialInformation)
-
-	session, err1 := mgo.DialWithInfo(dialInformation)
+// InitSessionFromDialInfo get the session information for a conneciton
+func InitSessionFromDialInfo(dialInfo *mgo.DialInfo, sessionMode mgo.Mode) (*mgo.Session, error) {
+	session, err1 := mgo.DialWithInfo(dialInfo)
 	if err1 != nil {
 		panic(err1)
 	}
 
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(sessionMode, true)
-
 	return session, nil
 }
 
