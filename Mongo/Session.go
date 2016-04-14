@@ -21,11 +21,26 @@ func InitCollectionFromSession(session *mgo.Session, databaseName string, collec
 	return db.C(collectionName)
 }
 
-// InitCollectionFromConnectionString - initialize collection from a connection string
+// InitCollectionFromConnectionString - initialize collection from a connection string and passin database
 func InitCollectionFromConnectionString(connectionString string, databaseName string, collectionName string) *mgo.Collection {
 	db, err := InitDatabaseFromConnection(connectionString, databaseName)
 	if err != nil {
 		panic(err)
+	}
+	return db.C(collectionName)
+}
+
+// InitCollectionAndDatabaseFromConnectionString - initialize collection from a connection string
+func InitCollectionAndDatabaseFromConnectionString(connectionString string, collectionName string) *mgo.Collection {
+	dialInformation, _, err := GetDialInformation(connectionString)
+	if err != nil {
+		fmt.Println("error getting dial information", err)
+		panic(err)
+	}
+
+	db, dbErr := InitDatabaseFromConnection(connectionString, dialInformation.Database)
+	if dbErr != nil {
+		panic(dbErr)
 	}
 	return db.C(collectionName)
 }
