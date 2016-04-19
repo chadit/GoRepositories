@@ -2,7 +2,6 @@ package Mongo
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -11,38 +10,39 @@ import (
 )
 
 // InitCollectionFromDatabase - initialize collection from mgo database
-func InitCollectionFromDatabase(db *mgo.Database, collectionName string) *mgo.Collection {
-	return db.C(collectionName)
+func InitCollectionFromDatabase(db *mgo.Database, collectionName string) (*mgo.Collection, error) {
+	return db.C(collectionName), nil
 }
 
 // InitCollectionFromSession - initialize collection from mgo session
-func InitCollectionFromSession(session *mgo.Session, databaseName string, collectionName string) *mgo.Collection {
+func InitCollectionFromSession(session *mgo.Session, databaseName string, collectionName string) (*mgo.Collection, error) {
 	db := session.DB(databaseName)
-	return db.C(collectionName)
+	return db.C(collectionName), nil
 }
 
 // InitCollectionFromConnectionString - initialize collection from a connection string and passin database
-func InitCollectionFromConnectionString(connectionString string, databaseName string, collectionName string) *mgo.Collection {
+func InitCollectionFromConnectionString(connectionString string, databaseName string, collectionName string) (*mgo.Collection, error) {
 	db, err := InitDatabaseFromConnection(connectionString, databaseName)
 	if err != nil {
-		panic(err)
+		return new(mgo.Collection), err
 	}
-	return db.C(collectionName)
+	return db.C(collectionName), nil
 }
 
 // InitCollectionAndDatabaseFromConnectionString - initialize collection from a connection string
-func InitCollectionAndDatabaseFromConnectionString(connectionString string, collectionName string) *mgo.Collection {
+func InitCollectionAndDatabaseFromConnectionString(connectionString string, collectionName string) (*mgo.Collection, error) {
 	dialInformation, _, err := GetDialInformation(connectionString)
 	if err != nil {
-		fmt.Println("error getting dial information", err)
-		panic(err)
+		//	fmt.Println("error getting dial information", err)
+		return new(mgo.Collection), err
 	}
 
 	db, dbErr := InitDatabaseFromConnection(connectionString, dialInformation.Database)
 	if dbErr != nil {
-		panic(dbErr)
+		//	panic(dbErr)
+		return new(mgo.Collection), dbErr
 	}
-	return db.C(collectionName)
+	return db.C(collectionName), nil
 }
 
 // InitDatabaseFromConnection sets session informaiton from a connection string
@@ -63,17 +63,18 @@ func InitDatabaseFromSession(session *mgo.Session, databaseName string) (*mgo.Da
 func InitSessionFromConnectionString(connectionString string) (*mgo.Session, error) {
 	dialInformation, sessionMode, err := GetDialInformation(connectionString)
 	if err != nil {
-		fmt.Println("error getting dial information", err)
-		panic(err)
+		//	fmt.Println("error getting dial information", err)
+		//panic(err)
+		return new(mgo.Session), err
 	}
 	return InitSessionFromDialInfo(dialInformation, sessionMode)
 }
 
 // InitSessionFromDialInfo get the session information for a conneciton
 func InitSessionFromDialInfo(dialInfo *mgo.DialInfo, sessionMode mgo.Mode) (*mgo.Session, error) {
-	session, err1 := mgo.DialWithInfo(dialInfo)
-	if err1 != nil {
-		panic(err1)
+	session, err := mgo.DialWithInfo(dialInfo)
+	if err != nil {
+		return new(mgo.Session), err
 	}
 
 	// Optional. Switch the session to a monotonic behavior.

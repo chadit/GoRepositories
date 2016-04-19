@@ -19,7 +19,6 @@ import (
 
 // Find - return all documents that match the query
 func Find(collection *mgo.Collection, query bson.M, queryOptions QueryOptions) *mgo.Query {
-	//	var m []bson.M
 	if queryOptions.Sort == "" {
 		return collection.Find(query).Skip(queryOptions.Skip).Limit(queryOptions.Limit).Select(queryOptions.Projection)
 		//	return m, err
