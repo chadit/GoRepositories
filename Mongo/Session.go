@@ -31,6 +31,14 @@ func InitCollectionFromConnectionString(connectionString string, databaseName st
 
 // InitCollectionAndDatabaseFromConnectionString - initialize collection from a connection string
 func InitCollectionAndDatabaseFromConnectionString(connectionString string, collectionName string) (*mgo.Collection, error) {
+	if collectionName == "" {
+		return nil, errors.New("collectionName cannot be empty")
+	}
+
+	if connectionString == "" {
+		return nil, errors.New("connectionString cannot be empty")
+	}
+
 	dialInformation, _, err := GetDialInformation(connectionString)
 	if err != nil {
 		//	fmt.Println("error getting dial information", err)
