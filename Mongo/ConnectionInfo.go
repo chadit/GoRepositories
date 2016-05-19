@@ -1,8 +1,9 @@
 package Mongo
 
 import (
-	"GoShare"
 	"time"
+
+	"github.com/chadit/GoShare"
 
 	"gopkg.in/mgo.v2/bson"
 )
