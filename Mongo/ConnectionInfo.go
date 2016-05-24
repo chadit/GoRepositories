@@ -1,6 +1,7 @@
 package Mongo
 
 import (
+	"GoRepositories/Mongo"
 	"time"
 
 	"github.com/chadit/GoShare"
@@ -43,13 +44,38 @@ type Tenant struct {
 	DispatchSystem   string      `json:"DispatchSystem"  bson:"DispatchSystem"`
 }
 
-// InitTenant sets the defaults for a new user
-func (p *Tenant) InitTenant() {
+// NewTenant gets a new object
+func NewTenant(tenantID string) *Tenant {
+	newItem := new(Tenant)
+	newItem.Init(tenantID)
+	return newItem
+}
+
+// Init sets the defaults
+func (p *Tenant) Init(tenantID string) {
 	eventTime := time.Now().UTC()
-	p.ID = bson.NewObjectId().Hex()
-	p.DateCreated = eventTime
+	p.ID = Mongo.GetNewBsonIDString()
+	if p.DateCreated.IsZero() {
+		p.DateCreated = eventTime
+	}
 	p.DateModified = eventTime
 	p.IsDeleted = false
+	p.TenantID = tenantID
+}
+
+// SetupSave updates the object
+func (p *Tenant) SetupSave(tenantID string) {
+	eventTime := time.Now().UTC()
+	if p.ID == "" {
+		p.ID = bson.NewObjectId().Hex()
+	}
+
+	if p.DateCreated.IsZero() {
+		p.DateCreated = eventTime
+	}
+
+	p.DateModified = eventTime
+	p.TenantID = tenantID
 }
 
 // TenantConnectionInfo model
