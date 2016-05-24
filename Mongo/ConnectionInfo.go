@@ -1,7 +1,6 @@
 package Mongo
 
 import (
-	"GoRepositories/Mongo"
 	"time"
 
 	"github.com/chadit/GoShare"
@@ -54,7 +53,7 @@ func NewTenant(tenantID string) *Tenant {
 // Init sets the defaults
 func (p *Tenant) Init(tenantID string) {
 	eventTime := time.Now().UTC()
-	p.ID = Mongo.GetNewBsonIDString()
+	p.ID = GetNewBsonIDString()
 	if p.DateCreated.IsZero() {
 		p.DateCreated = eventTime
 	}
