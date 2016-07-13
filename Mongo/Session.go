@@ -82,8 +82,10 @@ func InitSessionFromConnectionString(connectionString string) (*mgo.Session, err
 func InitSessionFromDialInfo(dialInfo *mgo.DialInfo, sessionMode mgo.Mode) (*mgo.Session, error) {
 	session, err := mgo.DialWithInfo(dialInfo)
 	if err != nil {
-		return new(mgo.Session), err
+		return nil, err
 	}
+
+	defer session.Close()
 
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(sessionMode, true)
