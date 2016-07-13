@@ -9,28 +9,39 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
+// ConnectionInfo holds the database conneciton information
+type ConnectionInfo struct {
+	session      *mgo.Session
+	sessionError error
+	databaseName string
+	db           *mgo.Database
+	dbError      error
+}
+
 // InitCollectionFromDatabase - initialize collection from mgo database
-func InitCollectionFromDatabase(db *mgo.Database, collectionName string) (*mgo.Collection, error) {
-	return db.C(collectionName), nil
+func (connection *ConnectionInfo) InitCollectionFromDatabase(collectionName string) (*mgo.Collection, error) {
+	return connection.db.C(collectionName), nil
 }
 
 // InitCollectionFromSession - initialize collection from mgo session
-func InitCollectionFromSession(session *mgo.Session, databaseName string, collectionName string) (*mgo.Collection, error) {
-	db := session.DB(databaseName)
+func (connection *ConnectionInfo) InitCollectionFromSession(databaseName string, collectionName string) (*mgo.Collection, error) {
+	db := connection.session.DB(databaseName)
+	connection.db = db
 	return db.C(collectionName), nil
 }
 
 // InitCollectionFromConnectionString - initialize collection from a connection string and passin database
-func InitCollectionFromConnectionString(connectionString string, databaseName string, collectionName string) (*mgo.Collection, error) {
-	db, err := InitDatabaseFromConnection(connectionString, databaseName)
-	if err != nil {
-		return new(mgo.Collection), err
-	}
-	return db.C(collectionName), nil
+func (connection *ConnectionInfo) InitCollectionFromConnectionString(connectionString string, databaseName string, collectionName string) (*mgo.Collection, error) {
+	return connection.initializeCollection(databaseName, connectionString, collectionName)
+	// db, err := connection.InitDatabaseFromConnection(connectionString, databaseName)
+	// if err != nil {
+	// 	return new(mgo.Collection), err
+	// }
+	// return db.C(collectionName), nil
 }
 
 // InitCollectionAndDatabaseFromConnectionString - initialize collection from a connection string
-func InitCollectionAndDatabaseFromConnectionString(connectionString string, collectionName string) (*mgo.Collection, error) {
+func (connection *ConnectionInfo) InitCollectionAndDatabaseFromConnectionString(connectionString string, collectionName string) (*mgo.Collection, error) {
 	if collectionName == "" {
 		return nil, errors.New("collectionName cannot be empty")
 	}
@@ -38,58 +49,84 @@ func InitCollectionAndDatabaseFromConnectionString(connectionString string, coll
 	if connectionString == "" {
 		return nil, errors.New("connectionString cannot be empty")
 	}
+	return connection.initializeCollection(connection.databaseName, connectionString, collectionName)
+	// if connection.databaseName == "" {
+	// 	dialInformation, _, err := GetDialInformation(connectionString)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	connection.databaseName = dialInformation.Database
+	// }
+	//
+	// connection.InitDatabaseFromConnection(connectionString, connection.databaseName)
+	// if connection.sessionError != nil {
+	// 	return nil, connection.sessionError
+	// }
+	//
+	// if connection.dbError != nil {
+	// 	return nil, connection.dbError
+	// }
+	// return connection.db.C(collectionName), nil
+}
 
-	dialInformation, _, err := GetDialInformation(connectionString)
-	if err != nil {
-		//	fmt.Println("error getting dial information", err)
-		return new(mgo.Collection), err
+func (connection *ConnectionInfo) initializeCollection(databaseName, connectionString, collectionName string) (*mgo.Collection, error) {
+	if databaseName == "" {
+		dialInformation, _, err := GetDialInformation(connectionString)
+		if err != nil {
+			return nil, err
+		}
+		connection.databaseName = dialInformation.Database
 	}
 
-	db, dbErr := InitDatabaseFromConnection(connectionString, dialInformation.Database)
-	if dbErr != nil {
-		//	panic(dbErr)
-		return new(mgo.Collection), dbErr
+	connection.InitDatabaseFromConnection(connectionString, connection.databaseName)
+	if connection.sessionError != nil {
+		return nil, connection.sessionError
 	}
-	return db.C(collectionName), nil
+
+	if connection.dbError != nil {
+		return nil, connection.dbError
+	}
+	return connection.db.C(collectionName), nil
 }
 
 // InitDatabaseFromConnection sets session informaiton from a connection string
-func InitDatabaseFromConnection(connectionString string, databaseName string) (*mgo.Database, error) {
-	session, err := InitSessionFromConnectionString(connectionString)
-	if err != nil {
-		return nil, err
+func (connection *ConnectionInfo) InitDatabaseFromConnection(connectionString string, databaseName string) {
+	connection.InitSessionFromConnectionString(connectionString)
+	if connection.sessionError != nil {
+		return
 	}
-	return session.DB(databaseName), nil
+
+	connection.db = connection.session.DB(databaseName)
 }
 
 // InitDatabaseFromSession sets session informaiton from a connection string
-func InitDatabaseFromSession(session *mgo.Session, databaseName string) (*mgo.Database, error) {
-	return session.DB(databaseName), nil
+func (connection *ConnectionInfo) InitDatabaseFromSession(databaseName string) {
+	connection.db = connection.session.DB(databaseName)
 }
 
 // InitSessionFromConnectionString get the session information for a conneciton
-func InitSessionFromConnectionString(connectionString string) (*mgo.Session, error) {
+func (connection *ConnectionInfo) InitSessionFromConnectionString(connectionString string) {
 	dialInformation, sessionMode, err := GetDialInformation(connectionString)
 	if err != nil {
-		//	fmt.Println("error getting dial information", err)
-		//panic(err)
-		return new(mgo.Session), err
+		connection.sessionError = err
+		return
 	}
-	return InitSessionFromDialInfo(dialInformation, sessionMode)
+	connection.databaseName = dialInformation.Database
+	connection.InitSessionFromDialInfo(dialInformation, sessionMode)
 }
 
 // InitSessionFromDialInfo get the session information for a conneciton
-func InitSessionFromDialInfo(dialInfo *mgo.DialInfo, sessionMode mgo.Mode) (*mgo.Session, error) {
+func (connection *ConnectionInfo) InitSessionFromDialInfo(dialInfo *mgo.DialInfo, sessionMode mgo.Mode) {
 	session, err := mgo.DialWithInfo(dialInfo)
 	if err != nil {
-		return nil, err
+		connection.sessionError = err
+		return
 	}
-
-	defer session.Close()
 
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(sessionMode, true)
-	return session, nil
+	connection.session = session
+	connection.sessionError = nil
 }
 
 // GetDialInformation get the dial information

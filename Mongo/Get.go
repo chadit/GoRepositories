@@ -16,6 +16,7 @@ func Find(collection *mgo.Collection, query bson.M, queryOptions QueryOptions) *
 
 // FindByID returns the document by it's bson id
 func FindByID(collection *mgo.Collection, documentID string) *mgo.Query {
+
 	return collection.FindId(documentID)
 }
 
