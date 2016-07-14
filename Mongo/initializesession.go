@@ -11,21 +11,21 @@ import (
 
 // ConnectionInfo holds the database conneciton information
 type ConnectionInfo struct {
-	session      *mgo.Session
-	sessionError error
-	databaseName string
-	db           *mgo.Database
-	dbError      error
+	Session       *mgo.Session
+	SessionError  error
+	DatabaseName  string
+	Database      *mgo.Database
+	DatabaseError error
 }
 
 // InitSessionFromConnectionString get the session information for a conneciton
 func (connection *ConnectionInfo) InitSessionFromConnectionString(connectionString string) {
 	dialInformation, sessionMode, err := GetDialInformation(connectionString)
 	if err != nil {
-		connection.sessionError = err
+		connection.SessionError = err
 		return
 	}
-	connection.databaseName = dialInformation.Database
+	connection.DatabaseName = dialInformation.Database
 	connection.InitSessionFromDialInfo(dialInformation, sessionMode)
 }
 
@@ -33,14 +33,14 @@ func (connection *ConnectionInfo) InitSessionFromConnectionString(connectionStri
 func (connection *ConnectionInfo) InitSessionFromDialInfo(dialInfo *mgo.DialInfo, sessionMode mgo.Mode) {
 	session, err := mgo.DialWithInfo(dialInfo)
 	if err != nil {
-		connection.sessionError = err
+		connection.SessionError = err
 		return
 	}
 
 	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(sessionMode, true)
-	connection.session = session
-	connection.sessionError = nil
+	connection.Session = session
+	connection.SessionError = nil
 }
 
 // GetDialInformation get the dial information

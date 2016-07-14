@@ -17,22 +17,22 @@ func TestCreateToken(t *testing.T) {
 		t.Error("failed to initialize collection")
 	}
 
-	if connectionInfo.sessionError != nil {
-		t.Error(connectionInfo.sessionError)
+	if connectionInfo.SessionError != nil {
+		t.Error(connectionInfo.SessionError)
 	}
 
-	if connectionInfo.session == nil {
+	if connectionInfo.Session == nil {
 		t.Error("session info is not there")
 	}
 
-	if connectionInfo.dbError != nil {
-		t.Error(connectionInfo.dbError)
+	if connectionInfo.DatabaseError != nil {
+		t.Error(connectionInfo.DatabaseError)
 	}
 
-	if connectionInfo.db == nil {
+	if connectionInfo.Database == nil {
 		t.Error("db info is not there")
 	}
 
-	connectionInfo.session.Close()
+	connectionInfo.Session.Close()
 
 }

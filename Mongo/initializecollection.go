@@ -8,13 +8,13 @@ import (
 
 // InitCollectionFromDatabase - initialize collection from mgo database
 func (connection *ConnectionInfo) InitCollectionFromDatabase(collectionName string) (*mgo.Collection, error) {
-	return connection.db.C(collectionName), nil
+	return connection.Database.C(collectionName), nil
 }
 
 // InitCollectionFromSession - initialize collection from mgo session
 func (connection *ConnectionInfo) InitCollectionFromSession(databaseName string, collectionName string) (*mgo.Collection, error) {
-	connection.db = connection.session.DB(databaseName)
-	return connection.db.C(collectionName), nil
+	connection.Database = connection.Session.DB(databaseName)
+	return connection.Database.C(collectionName), nil
 }
 
 // InitCollectionFromConnectionString - initialize collection from a connection string and passin database
@@ -36,7 +36,7 @@ func (connection *ConnectionInfo) InitCollectionAndDatabaseFromConnectionString(
 	if connectionString == "" {
 		return nil, errors.New("connectionString cannot be empty")
 	}
-	return connection.initializeCollection(connection.databaseName, connectionString, collectionName)
+	return connection.initializeCollection(connection.DatabaseName, connectionString, collectionName)
 }
 
 func (connection *ConnectionInfo) initializeCollection(databaseName, connectionString, collectionName string) (*mgo.Collection, error) {
@@ -45,16 +45,16 @@ func (connection *ConnectionInfo) initializeCollection(databaseName, connectionS
 		if err != nil {
 			return nil, err
 		}
-		connection.databaseName = dialInformation.Database
+		connection.DatabaseName = dialInformation.Database
 	}
 
-	connection.InitDatabaseFromConnection(connectionString, connection.databaseName)
-	if connection.sessionError != nil {
-		return nil, connection.sessionError
+	connection.InitDatabaseFromConnection(connectionString, connection.DatabaseName)
+	if connection.SessionError != nil {
+		return nil, connection.SessionError
 	}
 
-	if connection.dbError != nil {
-		return nil, connection.dbError
+	if connection.DatabaseError != nil {
+		return nil, connection.DatabaseError
 	}
-	return connection.db.C(collectionName), nil
+	return connection.Database.C(collectionName), nil
 }

@@ -10,7 +10,7 @@ func TestInsertAndDelete(t *testing.T) {
 	connectionInfo := new(ConnectionInfo)
 	collectionName := sessionTestCollection + GetNewBsonIDString()
 	connectionInfo.InitDatabaseFromConnectionString(databaseConnectionString)
-	defer connectionInfo.session.Close()
+	defer connectionInfo.Session.Close()
 
 	newTenant := NewTenant("test")
 	insertError := connectionInfo.Insert(collectionName, newTenant)
