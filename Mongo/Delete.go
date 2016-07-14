@@ -6,11 +6,19 @@ import (
 )
 
 // DeleteByQuery all existing document by find query
-func DeleteByQuery(collection *mgo.Collection, findQuery bson.M) (*mgo.ChangeInfo, error) {
+func (connection *ConnectionInfo) DeleteByQuery(collectionName string, findQuery bson.M) (*mgo.ChangeInfo, error) {
+	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
+	if collectionError != nil {
+		return nil, collectionError
+	}
 	return collection.RemoveAll(findQuery)
 }
 
 // DeleteByID all existing document by find query
-func DeleteByID(collection *mgo.Collection, documentID string) error {
+func (connection *ConnectionInfo) DeleteByID(collectionName, documentID string) error {
+	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
+	if collectionError != nil {
+		return collectionError
+	}
 	return collection.RemoveId(documentID)
 }
