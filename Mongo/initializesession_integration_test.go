@@ -9,7 +9,14 @@ var (
 
 func TestCreateToken(t *testing.T) {
 	connectionInfo := new(ConnectionInfo)
-	connectionInfo.InitCollectionAndDatabaseFromConnectionString(databaseConnectionString, sessionTestCollection)
+	collection, collectionError := connectionInfo.InitCollectionAndDatabaseFromConnectionString(databaseConnectionString, sessionTestCollection)
+	if collectionError != nil {
+		t.Error(collectionError)
+	}
+	if collection == nil {
+		t.Error("failed to initialize collection")
+	}
+
 	if connectionInfo.sessionError != nil {
 		t.Error(connectionInfo.sessionError)
 	}
