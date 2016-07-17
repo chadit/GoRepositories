@@ -44,8 +44,8 @@ type Tenant struct {
 }
 
 // NewTenant gets a new object
-func NewTenant(tenantID string) *Tenant {
-	newItem := new(Tenant)
+func NewTenant(tenantID string) Tenant {
+	newItem := Tenant{}
 	newItem.Init(tenantID)
 	return newItem
 }
@@ -124,13 +124,13 @@ func (p *Node) InitNode() {
 }
 
 // GetBaseConnectionInformation will attempt to locate the tenant by provided informaiton
-func GetBaseConnectionInformation(collectionName string) (*TenantConnectionInfo, error) {
-	item := new(Tenant)
+func GetBaseConnectionInformation(collectionName string) (TenantConnectionInfo, error) {
+	item := NewTenant("global")
 	item.ID = "global"
 	item.Name = "global"
-	baseConnectionInfo := new(TenantConnectionInfo)
+	baseConnectionInfo := TenantConnectionInfo{}
 	baseConnectionInfo.InitBaseTenantConnectionInfo()
-	baseConnectionInfo.Tenant = *item
+	baseConnectionInfo.Tenant = item
 	baseConnectionInfo.CollectionName = collectionName
 
 	return baseConnectionInfo, nil
