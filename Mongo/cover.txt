@@ -1,4 +1,4 @@
-Tested On 10/04/16 04:30:04 PM UTC
+Tested On 10/04/16 05:05:37 PM UTC
 github.com/chadit/GoRepositories/Mongo/ConnectionInfo.go:47:		NewTenant					100.0%
 github.com/chadit/GoRepositories/Mongo/ConnectionInfo.go:54:		Init						100.0%
 github.com/chadit/GoRepositories/Mongo/ConnectionInfo.go:66:		SetupSave					0.0%
@@ -25,10 +25,10 @@ github.com/chadit/GoRepositories/Mongo/QueryBuilder.go:14:		SetQueryOptionDefaul
 github.com/chadit/GoRepositories/Mongo/initializecollection.go:10:	InitCollectionFromDatabase			100.0%
 github.com/chadit/GoRepositories/Mongo/initializecollection.go:15:	InitCollectionFromSession			0.0%
 github.com/chadit/GoRepositories/Mongo/initializecollection.go:21:	InitCollectionFromConnectionString		0.0%
-github.com/chadit/GoRepositories/Mongo/initializecollection.go:26:	InitCollectionAndDatabaseFromConnectionString	60.0%
-github.com/chadit/GoRepositories/Mongo/initializecollection.go:37:	initializeCollection				72.7%
+github.com/chadit/GoRepositories/Mongo/initializecollection.go:26:	InitCollectionAndDatabaseFromConnectionString	0.0%
+github.com/chadit/GoRepositories/Mongo/initializecollection.go:37:	initializeCollection				0.0%
 github.com/chadit/GoRepositories/Mongo/initializedatabase.go:4:		InitDatabaseFromConnectionString		100.0%
-github.com/chadit/GoRepositories/Mongo/initializedatabase.go:10:	InitDatabaseFromConnection			75.0%
+github.com/chadit/GoRepositories/Mongo/initializedatabase.go:10:	InitDatabaseFromConnection			0.0%
 github.com/chadit/GoRepositories/Mongo/initializedatabase.go:20:	InitDatabaseFromSession				100.0%
 github.com/chadit/GoRepositories/Mongo/initializesession.go:13:		InitSessionFromConnectionString			66.7%
 github.com/chadit/GoRepositories/Mongo/initializesession.go:24:		InitSessionFromDialInfo				71.4%
@@ -38,4 +38,4 @@ github.com/chadit/GoRepositories/Mongo/initializesession.go:87:		getOptionString
 github.com/chadit/GoRepositories/Mongo/initializesession.go:92:		getValueFromPairString				0.0%
 github.com/chadit/GoRepositories/Mongo/initializesession.go:100:	getValueFromPairInt				71.4%
 github.com/chadit/GoRepositories/Mongo/initializesession.go:113:	getReadPreference				0.0%
-total:									(statements)					38.2%
+total:									(statements)					30.3%
