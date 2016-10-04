@@ -6,51 +6,66 @@ import (
 )
 
 // Find - return all documents that match the query
-func (connection *ConnectionInfo) Find(collectionName string, query bson.M, queryOptions QueryOptions) (*mgo.Query, error) {
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return nil, collectionError
+func (c ReposClient) Find(conn ConnectionInfo, query bson.M, queryOptions QueryOptions) (*mgo.Query, error) {
+	var (
+		col *mgo.Collection
+		err error
+	)
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return nil, err
 	}
 	if queryOptions.Sort == "" {
-		return collection.Find(query).Skip(queryOptions.Skip).Limit(queryOptions.Limit).Select(queryOptions.Projection), nil
+		return col.Find(query).Skip(queryOptions.Skip).Limit(queryOptions.Limit).Select(queryOptions.Projection), nil
 	}
 
-	return collection.Find(query).Sort(queryOptions.Sort).Skip(queryOptions.Skip).Limit(queryOptions.Limit).Select(queryOptions.Projection), nil
+	return col.Find(query).Sort(queryOptions.Sort).Skip(queryOptions.Skip).Limit(queryOptions.Limit).Select(queryOptions.Projection), nil
 }
 
 // FindByID returns the document by it's bson id
-func (connection *ConnectionInfo) FindByID(collectionName, documentID string) (*mgo.Query, error) {
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return nil, collectionError
+func (c ReposClient) FindByID(conn ConnectionInfo, documentID string) (*mgo.Query, error) {
+	var (
+		col *mgo.Collection
+		err error
+	)
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return nil, err
 	}
-	return collection.FindId(documentID), nil
+	return col.FindId(documentID), nil
 }
 
 // FindOne returns the first document found
-func (connection *ConnectionInfo) FindOne(collectionName string, query bson.M) (*mgo.Query, error) {
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return nil, collectionError
+func (c ReposClient) FindOne(conn ConnectionInfo, query bson.M) (*mgo.Query, error) {
+	var (
+		col *mgo.Collection
+		err error
+	)
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return nil, err
 	}
-	return collection.Find(query), nil
+	return col.Find(query), nil
 }
 
 // Count returns the count from a query
-func (connection *ConnectionInfo) Count(collectionName string, query bson.M) (int, error) {
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return 0, collectionError
+func (c ReposClient) Count(conn ConnectionInfo, query bson.M) (int, error) {
+	var (
+		col *mgo.Collection
+		err error
+	)
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return 0, err
 	}
-	return collection.Find(query).Count()
+	return col.Find(query).Count()
 }
 
 // Distinct returns list of unique results
-func (connection *ConnectionInfo) Distinct(collectionName string, query bson.M, propertyName string, results interface{}) (interface{}, error) {
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return nil, collectionError
+func (c ReposClient) Distinct(conn ConnectionInfo, query bson.M, propertyName string, results interface{}) (interface{}, error) {
+	var (
+		col *mgo.Collection
+		err error
+	)
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return nil, err
 	}
-	err := collection.Find(query).Distinct(propertyName, &results)
+	err = col.Find(query).Distinct(propertyName, &results)
 	return results, err
 }

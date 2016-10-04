@@ -9,15 +9,6 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
-// ConnectionInfo holds the database conneciton information
-type ConnectionInfo struct {
-	Session       *mgo.Session
-	SessionError  error
-	DatabaseName  string
-	Database      *mgo.Database
-	DatabaseError error
-}
-
 // InitSessionFromConnectionString get the session information for a conneciton
 func (connection *ConnectionInfo) InitSessionFromConnectionString(connectionString string) {
 	dialInformation, sessionMode, err := GetDialInformation(connectionString)

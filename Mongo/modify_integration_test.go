@@ -7,18 +7,19 @@ import (
 )
 
 func TestInsertAndDelete(t *testing.T) {
-	connectionInfo := new(ConnectionInfo)
-	collectionName := sessionTestCollection + GetNewBsonIDString()
-	connectionInfo.InitDatabaseFromConnectionString(databaseConnectionString)
-	defer connectionInfo.Session.Close()
+	c := ReposClient{}
+	conn := ConnectionInfo{}
+	conn.CollectionName = sessionTestCollection + GetNewBsonIDString()
+	conn.InitDatabaseFromConnectionString(databaseConnectionString)
+	defer conn.Session.Close()
 
 	newTenant := NewTenant("test")
-	insertError := connectionInfo.Insert(collectionName, newTenant)
+	insertError := c.Insert(conn, newTenant)
 	if insertError != nil {
 		t.Error(insertError)
 	}
 	var m bson.M
-	changeInfo, deleteError := connectionInfo.DeleteByQuery(collectionName, m)
+	changeInfo, deleteError := c.DeleteByQuery(conn, m)
 	if deleteError != nil {
 		t.Error(deleteError)
 	}
@@ -27,7 +28,7 @@ func TestInsertAndDelete(t *testing.T) {
 		t.Error("failed to delete records")
 	}
 
-	collection, collectionError := connectionInfo.InitCollectionFromDatabase(collectionName)
+	collection, collectionError := conn.InitCollectionFromDatabase(conn.CollectionName)
 	if collectionError != nil {
 		t.Error(collectionError)
 	}

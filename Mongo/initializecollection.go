@@ -20,11 +20,6 @@ func (connection *ConnectionInfo) InitCollectionFromSession(databaseName string,
 // InitCollectionFromConnectionString - initialize collection from a connection string and passin database
 func (connection *ConnectionInfo) InitCollectionFromConnectionString(connectionString string, databaseName string, collectionName string) (*mgo.Collection, error) {
 	return connection.initializeCollection(databaseName, connectionString, collectionName)
-	// db, err := connection.InitDatabaseFromConnection(connectionString, databaseName)
-	// if err != nil {
-	// 	return new(mgo.Collection), err
-	// }
-	// return db.C(collectionName), nil
 }
 
 // InitCollectionAndDatabaseFromConnectionString - initialize collection from a connection string

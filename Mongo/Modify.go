@@ -6,76 +6,98 @@ import (
 )
 
 // Insert a new document
-func (connection *ConnectionInfo) Insert(collectionName string, item interface{}) error {
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return collectionError
+func (c ReposClient) Insert(conn ConnectionInfo, item interface{}) error {
+	var (
+		col *mgo.Collection
+		err error
+	)
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return err
 	}
-	return collection.Insert(item)
+	return col.Insert(item)
 }
 
 // Update update an existing document, similar to find and replace document
-func (connection *ConnectionInfo) Update(collectionName string, findQuery bson.M, item interface{}) error {
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return collectionError
+func (c ReposClient) Update(conn ConnectionInfo, findQuery bson.M, item interface{}) error {
+	var (
+		col *mgo.Collection
+		err error
+	)
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return err
 	}
-	return collection.Update(findQuery, item)
+	return col.Update(findQuery, item)
 }
 
 // UpdateByQuery updates an existing document by an update query
-func (connection *ConnectionInfo) UpdateByQuery(collectionName string, findQuery bson.M, updateQuery bson.M) (*mgo.ChangeInfo, error) {
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return nil, collectionError
+func (c ReposClient) UpdateByQuery(conn ConnectionInfo, findQuery bson.M, updateQuery bson.M) (*mgo.ChangeInfo, error) {
+	var (
+		col *mgo.Collection
+		err error
+	)
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return nil, err
 	}
-	return collection.UpdateAll(findQuery, updateQuery)
+	return col.UpdateAll(findQuery, updateQuery)
 }
 
 // UpdateByID updates an existing document with a matching BSON ID
-func (connection *ConnectionInfo) UpdateByID(collectionName string, documentID string, item interface{}) error {
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return collectionError
+func (c ReposClient) UpdateByID(conn ConnectionInfo, documentID string, item interface{}) error {
+	var (
+		col *mgo.Collection
+		err error
+	)
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return err
 	}
-	return collection.UpdateId(documentID, item)
+	return col.UpdateId(documentID, item)
 }
 
 // UpdateByIDByQuery updates an existing document with a query with a matching BSON ID
-func (connection *ConnectionInfo) UpdateByIDByQuery(collectionName string, documentID string, updateQuery bson.M) error {
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return collectionError
+func (c ReposClient) UpdateByIDByQuery(conn ConnectionInfo, documentID string, updateQuery bson.M) error {
+	var (
+		col *mgo.Collection
+		err error
+	)
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return err
 	}
-	return collection.UpdateId(documentID, updateQuery)
+	return col.UpdateId(documentID, updateQuery)
 }
 
 // UpdateOneAndReturn updates and existing document and returns those documents
-func (connection *ConnectionInfo) UpdateOneAndReturn(collectionName string, findQuery bson.M, updateQuery bson.M) (bson.M, *mgo.ChangeInfo, error) {
-	var m bson.M
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return m, nil, collectionError
+func (c ReposClient) UpdateOneAndReturn(conn ConnectionInfo, findQuery bson.M, updateQuery bson.M) (bson.M, *mgo.ChangeInfo, error) {
+	var (
+		col *mgo.Collection
+		err error
+		m   bson.M
+	)
+
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return m, nil, err
 	}
 	change := mgo.Change{
 		Update:    updateQuery,
 		ReturnNew: true,
 	}
-	info, err := collection.Find(findQuery).Apply(change, &m)
+	info, err := col.Find(findQuery).Apply(change, &m)
 	return m, info, err
 }
 
 // UpdateByIDAndReturn updates and existing documents and returns those documents with a matching BSON ID
-func (connection *ConnectionInfo) UpdateByIDAndReturn(collectionName string, documentID string, updateQuery bson.M) (bson.M, *mgo.ChangeInfo, error) {
-	var m bson.M
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return m, nil, collectionError
+func (c ReposClient) UpdateByIDAndReturn(conn ConnectionInfo, documentID string, updateQuery bson.M) (bson.M, *mgo.ChangeInfo, error) {
+	var (
+		col *mgo.Collection
+		err error
+		m   bson.M
+	)
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return m, nil, err
 	}
 	change := mgo.Change{
 		Update:    updateQuery,
 		ReturnNew: true,
 	}
-	info, err := collection.FindId(documentID).Apply(change, &m)
+	info, err := col.FindId(documentID).Apply(change, &m)
 	return m, info, err
 }

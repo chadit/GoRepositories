@@ -6,19 +6,27 @@ import (
 )
 
 // DeleteByQuery all existing document by find query
-func (connection *ConnectionInfo) DeleteByQuery(collectionName string, findQuery bson.M) (*mgo.ChangeInfo, error) {
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return nil, collectionError
+func (c ReposClient) DeleteByQuery(conn ConnectionInfo, findQuery bson.M) (*mgo.ChangeInfo, error) {
+	var (
+		col *mgo.Collection
+		err error
+	)
+
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return nil, err
 	}
-	return collection.RemoveAll(findQuery)
+	return col.RemoveAll(findQuery)
 }
 
 // DeleteByID all existing document by find query
-func (connection *ConnectionInfo) DeleteByID(collectionName, documentID string) error {
-	collection, collectionError := connection.InitCollectionFromDatabase(collectionName)
-	if collectionError != nil {
-		return collectionError
+func (c ReposClient) DeleteByID(conn ConnectionInfo, documentID string) error {
+	var (
+		col *mgo.Collection
+		err error
+	)
+
+	if col, err = conn.InitCollectionFromDatabase(conn.CollectionName); err != nil {
+		return err
 	}
-	return collection.RemoveId(documentID)
+	return col.RemoveId(documentID)
 }
