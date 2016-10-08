@@ -22,6 +22,10 @@ type Client interface {
 	UpdateByIDByQuery(conn ConnectionInfo, documentID string, updateQuery bson.M) error
 	UpdateOneAndReturn(conn ConnectionInfo, findQuery bson.M, updateQuery bson.M) (bson.M, *mgo.ChangeInfo, error)
 	UpdateByIDAndReturn(conn ConnectionInfo, documentID string, updateQuery bson.M) (bson.M, *mgo.ChangeInfo, error)
+
+	// Delete.go
+	DeleteByQuery(conn ConnectionInfo, findQuery bson.M) (*mgo.ChangeInfo, error)
+	DeleteByID(conn ConnectionInfo, documentID string) error
 }
 
 // ReposClient passed in struct
@@ -35,4 +39,10 @@ type ConnectionInfo struct {
 	DatabaseName   string
 	Database       *mgo.Database
 	DatabaseError  error
+}
+
+// App defines the application container
+type App struct {
+	Client Client
+	Conn   ConnectionInfo
 }

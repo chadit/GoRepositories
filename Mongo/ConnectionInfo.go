@@ -90,6 +90,9 @@ type TenantConnectionInfo struct {
 // InitBaseTenantConnectionInfo sets the defaults for a new userlogin
 func (p *TenantConnectionInfo) InitBaseTenantConnectionInfo() {
 	p.ConnectionString = Shares.MongoConnection
+	if p.ConnectionString == "" {
+		p.ConnectionString = "mongodb://127.0.0.1/QikTracker/?w=majority;journal=true;maxPoolSize=1000"
+	}
 }
 
 // Node model used to hold tenant connection information
@@ -125,12 +128,12 @@ func (p *Node) InitNode() {
 
 // GetBaseConnectionInformation will attempt to locate the tenant by provided informaiton
 func GetBaseConnectionInformation(collectionName string) (TenantConnectionInfo, error) {
-	item := NewTenant("global")
-	item.ID = "global"
-	item.Name = "global"
+	// item := NewTenant("global")
+	// item.ID = "global"
+	//	item.Name = "global"
 	baseConnectionInfo := TenantConnectionInfo{}
 	baseConnectionInfo.InitBaseTenantConnectionInfo()
-	baseConnectionInfo.Tenant = item
+	//	baseConnectionInfo.Tenant = item
 	baseConnectionInfo.CollectionName = collectionName
 
 	return baseConnectionInfo, nil
