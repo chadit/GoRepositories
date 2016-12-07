@@ -46,3 +46,30 @@ type App struct {
 	Client Client
 	Conn   ConnectionInfo
 }
+
+// currently MGO does not have a good way to see if a session is still active, this is really the only option
+func (s *ConnectionInfo) SessionActive() (active bool) {
+	defer func() {
+		if ierr := recover(); ierr != nil {
+			active = false
+			return
+		}
+	}()
+
+	//Ping panics if session is closed. (see mgo.Session.Panic())
+	if err := s.Session.Ping(); err != nil {
+		active = false
+		return
+	}
+	return true
+}
+
+func (s *ConnectionInfo) Close() {
+	if s.Session != nil {
+		s.Session.Close()
+	}
+
+	if s.Database != nil && s.Database.Session != nil {
+		s.Database.Session.Close()
+	}
+}
